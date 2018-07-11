@@ -9,12 +9,12 @@ import { reducer as cacheReducer, NORMALIZED_CACHE_KEY, METADATA_KEY } from './c
 import { reducer as offlineMetadataReducer, offlineEffect, discard } from './link/offline-link';
 
 /**
- * 
+ *
  * @param {() => AWSAppSyncClient} clientGetter
- * @param {Function} persistCallback 
- * @param {Function} conflictResolver 
+ * @param {Function} persistCallback
+ * @param {Function} conflictResolver
  */
-const newStore = (clientGetter = () => null, persistCallback = () => null, conflictResolver, dataIdFromObject) => {
+const newStore = (clientGetter = () => null, persistCallback = () => null, conflictResolver, dataIdFromObject, customStore) => {
     const store = createStore(
         combineReducers({
             rehydrated: (state = false, action) => {
@@ -35,7 +35,8 @@ const newStore = (clientGetter = () => null, persistCallback = () => null, confl
                 ...offlineConfig,
                 persistCallback,
                 persistOptions: {
-                    whitelist: [NORMALIZED_CACHE_KEY, METADATA_KEY, 'offline']
+                    whitelist: [NORMALIZED_CACHE_KEY, METADATA_KEY, 'offline'],
+                    storage: customStore
                 },
                 effect: (effect, action) => offlineEffect(store, clientGetter(), effect, action),
                 discard: discard(conflictResolver),

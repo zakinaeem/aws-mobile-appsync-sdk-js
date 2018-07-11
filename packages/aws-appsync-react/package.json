@@ -16,7 +16,7 @@
     "prepare": "tsc"
   },
   "dependencies": {
-    "aws-appsync": "^1.1.4",
+    "aws-appsync": "PATH_TO_AWS_SYNC_SRC",
     "prop-types": "^15.6.0"
   },
   "peerDependencies": {

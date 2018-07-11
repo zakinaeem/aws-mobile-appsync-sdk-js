@@ -106,6 +106,7 @@ export interface AWSAppSyncClientOptions {
     complexObjectsCredentials?: () => (Credentials | CredentialsOptions | null) | Credentials | CredentialsOptions | null,
     cacheOptions?: ApolloReducerConfig,
     disableOffline?: boolean,
+    customStore?: object
 }
 
 class AWSAppSyncClient<TCacheShape> extends ApolloClient<TCacheShape> {
@@ -140,7 +141,8 @@ class AWSAppSyncClient<TCacheShape> extends ApolloClient<TCacheShape> {
         conflictResolver,
         complexObjectsCredentials,
         cacheOptions = {},
-        disableOffline = false
+        disableOffline = false,
+        customStore = null
     }: AWSAppSyncClientOptions, options?: ApolloClientOptions<InMemoryCache>) {
         const { cache: customCache = undefined, link: customLink = undefined } = options || {};
 
@@ -153,7 +155,7 @@ class AWSAppSyncClient<TCacheShape> extends ApolloClient<TCacheShape> {
         let resolveClient;
 
         const dataIdFromObject = disableOffline ? () => { } : cacheOptions.dataIdFromObject || defaultDataIdFromObject;
-        const store = disableOffline ? null : createStore(() => this, () => resolveClient(this), conflictResolver, dataIdFromObject);
+        const store = disableOffline ? null : createStore(() => this, () => resolveClient(this), conflictResolver, dataIdFromObject, customStore);
         const cache: ApolloCache<any> = disableOffline ? (customCache || new InMemoryCache(cacheOptions)) : new OfflineCache(store, cacheOptions);
 
         const waitForRehydrationLink = new ApolloLink((op, forward) => {
